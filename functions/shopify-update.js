@@ -15,8 +15,8 @@ const payload = {
 };
 
 exports.handler = async function (event, context) {
-  console.log('headers', event.headers)
-  console.log(context)
+  // console.log('headers', event.headers)
+  // console.log(context)
 
   try {
     if (!token) {
@@ -37,7 +37,7 @@ exports.handler = async function (event, context) {
       }
     }
 
-    console.log('Shopify Header', event.headers['x-shopify-hmac-sha256'])
+    // console.log('Shopify Header', event.headers['x-shopify-hmac-sha256'])
 
     // Check if the required header is present
     if (!event.headers || !event.headers['x-shopify-hmac-sha256']) {
@@ -63,9 +63,9 @@ exports.handler = async function (event, context) {
       .update(requestBody, 'utf8')
       .digest('base64');
 
-    console.log('Request body:', requestBody);
-    console.log('shopifyHmacHeader:', shopifyHmacHeader);
-    console.log('calculatedHmac:', calculatedHmac);
+    // console.log('Request body:', requestBody);
+    // console.log('shopifyHmacHeader:', shopifyHmacHeader);
+    // console.log('calculatedHmac:', calculatedHmac);
 
     if (calculatedHmac !== shopifyHmacHeader) {
       console.log('Shopify hash is incorrect')
@@ -77,22 +77,20 @@ exports.handler = async function (event, context) {
       };
     }      
 
-    // const response = await fetch(deployUrl, {
-    //   method: 'POST',
-    //   headers,
-    //   body: JSON.stringify(payload),
-    // });
+    const response = await fetch(deployUrl, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(payload),
+    });
 
-    // const data = await response.json();
+    const data = await response.json();
 
-    // console.log(data)
+    console.log(data)
 
-    // return {
-    //   statusCode: response.status,
-    //   body: JSON.stringify(data),
-    // };
-
-    return {}
+    return {
+      statusCode: response.status,
+      body: JSON.stringify(data),
+    };
   } catch (error) {
     console.log(error);
 
