@@ -52,8 +52,10 @@ exports.handler = async function (event, context) {
     // Retrieve the value of the header
     const shopifyHmacHeader = event.headers['x-shopify-hmac-sha256'];
 
-    // Retrieve the request body
-    const requestBody = event.body;
+    // Retrieve the request body - Modified to handle both parsed and raw bodies
+    const requestBody = typeof event.body === 'string' 
+      ? event.body 
+      : JSON.stringify(event.body);
 
     // Verify the HMAC
     const calculatedHmac = crypto
@@ -61,7 +63,9 @@ exports.handler = async function (event, context) {
       .update(requestBody, 'utf8')
       .digest('base64');
 
-    // console.log(calculatedHmac)
+    console.log('Request body:', requestBody);
+    console.log('shopifyHmacHeader:', shopifyHmacHeader);
+    console.log('calculatedHmac:', calculatedHmac);
 
     if (calculatedHmac !== shopifyHmacHeader) {
       console.log('Shopify hash is incorrect')
